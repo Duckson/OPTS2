@@ -27,7 +27,7 @@ $title = 'ОПТС - Отчёт';
                         <?php if ($_SESSION['role'] == 1): ?>
                             <li><a href="/OPTS2/practice_types/list.php">Типы практики</a></li>
                             <li><a href="/OPTS2/contracts/list.php">Контракты</a></li>
-                            <li><a href="companies/list.php">Компании</a></li>
+                            <li><a href="/OPTS2/companies/list.php">Компании</a></li>
                         <?php endif; ?>
                     </ul>
                     <ul class="nav navbar-nav navbar-right">
