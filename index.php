@@ -37,7 +37,7 @@ $title = 'ОПТС - Вход';
         </form>
     </div>
 </div>
-<?php include($_SERVER['DOCUMENT_ROOT'] . '/OPTS2/footer.php') ?>
+<?php include($_SERVER['DOCUMENT_ROOT'] . '/OPTS2/dependencies/footer.php') ?>
 
 
 

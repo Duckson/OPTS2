@@ -1,23 +1,27 @@
 <?php
-session_start();
-if ($_SESSION['role'] != 1) header('Location: /OPTS2/index.php');
+include ($_SERVER['DOCUMENT_ROOT'] . '/OPTS2/dependencies/session.php');
 $title = 'ОПТС - Редактирование компании';
 if (!empty($_GET['id'])) {
     if (!empty($_POST) && empty($_POST['e_name'])) $error = 'Не правильно заполнена форма';
     elseif (!empty($_POST)) {
         $sql = new mysqli('localhost', 'root', 'root', 'opts');
-        $query = "UPDATE companies SET  name='{$_POST['e_name']}', telephone='{$_POST['e_telephone']}',
-                  address='{$_POST['e_address']}', representative='{$_POST['e_fio']}', description='{$_POST['e_description']}' WHERE id={$_GET['id']}";
-        $sql->query($query);
-        echo $sql->error;
+        $query = "UPDATE companies SET  name=?, telephone=?, address=?, representative=?, description=? WHERE id=?";
+        $prep = $sql->prepare($query);
+        $prep->bind_param('sssssi', $_POST['e_name'], $_POST['e_telephone'], $_POST['e_address'], $_POST['e_fio'], $_POST['e_description'], $_GET['id']);
+        $prep->execute();
+        $prep->close();
         header('Location: /OPTS2/companies/view.php?id=' . $_GET['id']);
     }
 
     $sql = new mysqli('localhost', 'root', 'root', 'opts');
-    $query = $sql->query('SELECT * FROM companies WHERE id=' . $_GET['id']);
-    $result = $query->fetch_assoc();
+    $prep = $sql->prepare('SELECT name, telephone, address, representative, description FROM companies WHERE id=?');
+    $prep->bind_param('i', $_GET['id']);
+    $prep->execute();
+    $prep->bind_result($result['name'], $result['telephone'], $result['address'], $result['representative'], $result['description']);
+    $prep->fetch();
+    $prep->close();
 } else $error = 'Произошла ошибка отображения страницы';
-include $_SERVER['DOCUMENT_ROOT'] . '/OPTS2/header.php';
+include $_SERVER['DOCUMENT_ROOT'] . '/OPTS2/dependencies/header.php';
 ?>
 
     <div class="row content">
@@ -69,4 +73,4 @@ include $_SERVER['DOCUMENT_ROOT'] . '/OPTS2/header.php';
         </div>
     </div>
     </div>
-<?php include($_SERVER['DOCUMENT_ROOT'] . '/OPTS2/footer.php') ?>
+<?php include($_SERVER['DOCUMENT_ROOT'] . '/OPTS2/dependencies/footer.php') ?>

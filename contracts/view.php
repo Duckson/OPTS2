@@ -1,8 +1,7 @@
 <?php
-session_start();
-if ($_SESSION['role'] != 1) header('Location: /OPTS2/index.php');
+include ($_SERVER['DOCUMENT_ROOT'] . '/OPTS2/dependencies/session.php');
 $title = 'ОПТС - Просмотр контракта';
-include $_SERVER['DOCUMENT_ROOT'] . '/OPTS2/header.php';
+include $_SERVER['DOCUMENT_ROOT'] . '/OPTS2/dependencies/header.php';
 ?>
 
 <div class="row content">
@@ -46,4 +45,4 @@ include $_SERVER['DOCUMENT_ROOT'] . '/OPTS2/header.php';
     </div>
 </div>
 </div>
-<?php include($_SERVER['DOCUMENT_ROOT'] . '/OPTS2/footer.php') ?>
+<?php include($_SERVER['DOCUMENT_ROOT'] . '/OPTS2/dependencies/footer.php') ?>

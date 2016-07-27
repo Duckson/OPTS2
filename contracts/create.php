@@ -1,8 +1,7 @@
 <?php
-session_start();
-if ($_SESSION['role'] != 1) header('Location: /OPTS2/index.php');
+include ($_SERVER['DOCUMENT_ROOT'] . '/OPTS2/dependencies/session.php');
 $title = 'ОПТС - Создание контракта';
-if (!empty($_POST) && (empty($_POST['c_company']) || empty($_POST['c_start_date']) || empty($_POST['c_end_date']))) $error = 'Не правильно заполнена форма';
+/*if (!empty($_POST) && (empty($_POST['c_company']) || empty($_POST['c_start_date']) || empty($_POST['c_end_date']))) $error = 'Не правильно заполнена форма';
 elseif(!empty($_POST)) {
     $sql = new mysqli('localhost', 'root', 'root', 'opts');
     $query = "INSERT INTO contracts (company_id, start_date, end_date, description) VALUES ('{$_POST['c_name']}',
@@ -10,9 +9,9 @@ elseif(!empty($_POST)) {
     $sql->query($query);
     echo $sql->error;
     header('Location: /OPTS2/companies/view.php?id=' . $sql->insert_id);
-}
+}*/
 
-include $_SERVER['DOCUMENT_ROOT'] . '/OPTS2/header.php';
+include $_SERVER['DOCUMENT_ROOT'] . '/OPTS2/dependencies/header.php';
 ?>
 
     <div class="row content">
@@ -49,4 +48,4 @@ include $_SERVER['DOCUMENT_ROOT'] . '/OPTS2/header.php';
         </div>
     </div>
     </div>
-<?php include($_SERVER['DOCUMENT_ROOT'] . '/OPTS2/footer.php') ?>
+<?php include($_SERVER['DOCUMENT_ROOT'] . '/OPTS2/dependencies/footer.php') ?>

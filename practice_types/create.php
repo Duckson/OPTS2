@@ -1,14 +1,22 @@
 <?php
-session_start();
-if ($_SESSION['role'] != 1) header('Location: /OPTS2/index.php');
+include ($_SERVER['DOCUMENT_ROOT'] . '/OPTS2/dependencies/session.php');
 $title = 'ОПТС - Создание типа практики';
-include $_SERVER['DOCUMENT_ROOT'] . '/OPTS2/header.php';
+if (!empty($_POST) && empty($_POST['c_name'])) $error = 'Не правильно заполнена форма';
+elseif(!empty($_POST)) {
+    $sql = new mysqli('localhost', 'root', 'root', 'opts');
+    $prep = $sql->prepare('INSERT INTO practice_types (name) VALUES (?)');
+    $prep->bind_param('s', $_POST['c_name']);
+    $prep->execute();
+    $prep->close();
+    header('Location: /OPTS2/practice_types/list.php?name=' . $_POST['c_name']);
+}
+include $_SERVER['DOCUMENT_ROOT'] . '/OPTS2/dependencies/header.php';
 ?>
    
     <div class="row content">
         <div class="marg-sides-10">
             <h3>Создать тип практики</h3>
-            <form action="list.php" method="post">
+            <form action="create.php" method="post">
                 <div class="well well-lg">
                     <div class="form-group">
                         <label for="c_name">Название:</label>
@@ -20,4 +28,4 @@ include $_SERVER['DOCUMENT_ROOT'] . '/OPTS2/header.php';
         </div>
     </div>
     </div>
-<?php include($_SERVER['DOCUMENT_ROOT'] . '/OPTS2/footer.php') ?>
+<?php include($_SERVER['DOCUMENT_ROOT'] . '/OPTS2/dependencies/footer.php') ?>

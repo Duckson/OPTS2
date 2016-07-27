@@ -1,13 +1,16 @@
 <?php
-session_start();
-if ($_SESSION['role'] != 1) header('Location: /OPTS2/index.php');
+include ($_SERVER['DOCUMENT_ROOT'] . '/OPTS2/dependencies/session.php');
 $title = 'ОПТС - Просмотр компании';
 if (!empty($_GET['id'])) {
     $sql = new mysqli('localhost', 'root', 'root', 'opts');
-    $query = $sql->query('SELECT * FROM companies WHERE id=' . $_GET['id']);
-    $result = $query->fetch_assoc();
+    $prep = $sql->prepare('SELECT name, telephone, address, representative, description FROM companies WHERE id=?');
+    $prep->bind_param('i', $_GET['id']);
+    $prep->execute();
+    $prep->bind_result($result['name'], $result['telephone'], $result['address'], $result['representative'], $result['description']);
+    $prep->fetch();
+    $prep->close();
 } else $error = 'Произошла ошибка отображения страницы';
-include $_SERVER['DOCUMENT_ROOT'] . '/OPTS2/header.php';
+include $_SERVER['DOCUMENT_ROOT'] . '/OPTS2/dependencies/header.php';
 ?>
 
 <div class="row content">
@@ -26,4 +29,4 @@ include $_SERVER['DOCUMENT_ROOT'] . '/OPTS2/header.php';
     </div>
 </div>
 </div>
-<?php include($_SERVER['DOCUMENT_ROOT'] . '/OPTS2/footer.php') ?>
+<?php include($_SERVER['DOCUMENT_ROOT'] . '/OPTS2/dependencies/footer.php') ?>

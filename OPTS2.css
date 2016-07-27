@@ -51,3 +51,11 @@
 .form-error{
     color: #b80000;
 }
+.form-glyph{
+    margin-bottom: 0; !important;
+}
+.btn-glyph{
+    background-color: inherit;
+    padding: inherit;
+    border: none;
+}
