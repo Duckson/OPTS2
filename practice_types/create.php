@@ -3,7 +3,6 @@ include ($_SERVER['DOCUMENT_ROOT'] . '/OPTS2/dependencies/session.php');
 $title = 'ОПТС - Создание типа практики';
 if (!empty($_POST) && empty($_POST['c_name'])) $error = 'Не правильно заполнена форма';
 elseif(!empty($_POST)) {
-    $sql = new mysqli('localhost', 'root', 'root', 'opts');
     $prep = $sql->prepare('INSERT INTO practice_types (name) VALUES (?)');
     $prep->bind_param('s', $_POST['c_name']);
     $prep->execute();

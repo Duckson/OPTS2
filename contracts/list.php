@@ -1,7 +1,6 @@
 <?php
 include($_SERVER['DOCUMENT_ROOT'] . '/OPTS2/dependencies/session.php');
 $title = 'ОПТС - Список контрактов';
-$sql = new mysqli('localhost', 'root', 'root', 'opts');
 $prep_str = '';
 
 if (!empty($_POST['delete_id'])) {

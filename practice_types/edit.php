@@ -2,7 +2,6 @@
 include($_SERVER['DOCUMENT_ROOT'] . '/OPTS2/dependencies/session.php');
 $title = 'ОПТС - Редактирование типа практики';
 if (!empty($_GET['id'])) {
-    $sql = new mysqli('localhost', 'root', 'root', 'opts');
     if (!empty($_POST) && empty($_POST['e_name'])) $error = 'Не правильно заполнена форма';
     elseif (!empty($_POST)) {
         $query = "UPDATE practice_types SET name=? WHERE id=?";

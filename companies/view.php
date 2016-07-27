@@ -2,7 +2,6 @@
 include ($_SERVER['DOCUMENT_ROOT'] . '/OPTS2/dependencies/session.php');
 $title = 'ОПТС - Просмотр компании';
 if (!empty($_GET['id'])) {
-    $sql = new mysqli('localhost', 'root', 'root', 'opts');
     $prep = $sql->prepare('SELECT name, telephone, address, representative, description FROM companies WHERE id=?');
     $prep->bind_param('i', $_GET['id']);
     $prep->execute();

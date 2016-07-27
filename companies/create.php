@@ -3,7 +3,6 @@ include ($_SERVER['DOCUMENT_ROOT'] . '/OPTS2/dependencies/session.php');
 $title = 'ОПТС - Создание компании';
 if (!empty($_POST) && empty($_POST['c_name'])) $error = 'Не правильно заполнена форма';
 elseif(!empty($_POST)) {
-    $sql = new mysqli('localhost', 'root', 'root', 'opts');
     $query = "INSERT INTO companies (name, telephone, address, representative, description) VALUES (?, ?, ?, ?, ?)";
     $prep = $sql->prepare($query);
     $prep->bind_param('sssss', $_POST['c_name'], $_POST['c_telephone'], $_POST['c_address'], $_POST['c_fio'], $_POST['c_description']);

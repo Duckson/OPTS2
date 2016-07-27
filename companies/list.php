@@ -1,7 +1,6 @@
 <?php
 include ($_SERVER['DOCUMENT_ROOT'] . '/OPTS2/dependencies/session.php');
 $title = 'ОПТС - Список компаний';
-$sql = new mysqli('localhost', 'root', 'root', 'opts');
 $tr_count = 3;
 $page = (!empty($_GET['page'])) ? $_GET['page'] : 1;
 $prep_str = '';

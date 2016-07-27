@@ -2,7 +2,6 @@
 include ($_SERVER['DOCUMENT_ROOT'] . '/OPTS2/dependencies/session.php');
 $title = 'ОПТС - Список типов практики';
 $prep_str = '';
-$sql = new mysqli('localhost', 'root', 'root', 'opts');
 
 if(!empty($_POST['delete_id'])){
     $prep = $sql->prepare('DELETE FROM practice_types WHERE id=?');
