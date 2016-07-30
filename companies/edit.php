@@ -1,23 +1,31 @@
 <?php
-include ($_SERVER['DOCUMENT_ROOT'] . '/OPTS2/dependencies/session.php');
+include($_SERVER['DOCUMENT_ROOT'] . '/OPTS2/dependencies/session.php');
 $title = 'ОПТС - Редактирование компании';
 if (!empty($_GET['id'])) {
     if (!empty($_POST) && empty($_POST['e_name'])) $error = 'Не правильно заполнена форма';
     elseif (!empty($_POST)) {
-        $query = "UPDATE companies SET  name=?, telephone=?, address=?, representative=?, description=? WHERE id=?";
+        $query = "UPDATE companies SET  name=:name, telephone=:telephone, address=:address, representative=:representative, description=:description WHERE id=:id";
         $prep = $sql->prepare($query);
-        $prep->bind_param('sssssi', $_POST['e_name'], $_POST['e_telephone'], $_POST['e_address'], $_POST['e_fio'], $_POST['e_description'], $_GET['id']);
+        $prep->bindParam(':name', $name, PDO::PARAM_STR);
+        $prep->bindParam(':telephone', $telephone, PDO::PARAM_STR);
+        $prep->bindParam(':address', $address, PDO::PARAM_STR);
+        $prep->bindParam(':representative', $representative, PDO::PARAM_STR);
+        $prep->bindParam(':description', $description, PDO::PARAM_STR);
+        $prep->bindParam(':id', $id, PDO::PARAM_INT);
+        $name = $_POST['e_name'];
+        $telephone = $_POST['e_telephone'];
+        $address = $_POST['e_address'];
+        $representative = $_POST['e_fio'];
+        $description = $_POST['e_description'];
+        $id = $_GET['id'];
         $prep->execute();
-        $prep->close();
         header('Location: /OPTS2/companies/view.php?id=' . $_GET['id']);
     }
-
-    $prep = $sql->prepare('SELECT name, telephone, address, representative, description FROM companies WHERE id=?');
-    $prep->bind_param('i', $_GET['id']);
+    $prep = $sql->prepare('SELECT name, telephone, address, representative, description FROM companies WHERE id=:id');
+    $prep->bindParam(':id', $id, PDO::PARAM_INT);
+    $id = $_GET['id'];
     $prep->execute();
-    $prep->bind_result($result['name'], $result['telephone'], $result['address'], $result['representative'], $result['description']);
-    $prep->fetch();
-    $prep->close();
+    $result = $prep->fetch();
 } else $error = 'Произошла ошибка отображения страницы';
 include $_SERVER['DOCUMENT_ROOT'] . '/OPTS2/dependencies/header.php';
 ?>
@@ -54,8 +62,8 @@ include $_SERVER['DOCUMENT_ROOT'] . '/OPTS2/dependencies/header.php';
                             <div class="col-sm-6">
                                 <div class="form-group">
                                     <label for="e_description">Описание:</label>
-                                <textarea rows="12" class="form-control" name="e_description"
-                                          id="e_description"><?= $result['description'] ?></textarea>
+                                    <textarea rows="12" class="form-control" name="e_description"
+                                              id="e_description"><?= $result['description'] ?></textarea>
                                 </div>
                             </div>
                         </div>

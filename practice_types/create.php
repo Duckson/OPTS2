@@ -3,10 +3,9 @@ include ($_SERVER['DOCUMENT_ROOT'] . '/OPTS2/dependencies/session.php');
 $title = 'ОПТС - Создание типа практики';
 if (!empty($_POST) && empty($_POST['c_name'])) $error = 'Не правильно заполнена форма';
 elseif(!empty($_POST)) {
-    $prep = $sql->prepare('INSERT INTO practice_types (name) VALUES (?)');
-    $prep->bind_param('s', $_POST['c_name']);
+    $prep = $sql->prepare('INSERT INTO practice_types (name) VALUES (:name)');
+    $prep->bindParam(':name', $_POST['c_name'], PDO::PARAM_STR);
     $prep->execute();
-    $prep->close();
     header('Location: /OPTS2/practice_types/list.php?name=' . $_POST['c_name']);
 }
 include $_SERVER['DOCUMENT_ROOT'] . '/OPTS2/dependencies/header.php';

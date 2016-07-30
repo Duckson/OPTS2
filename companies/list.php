@@ -3,13 +3,12 @@ include ($_SERVER['DOCUMENT_ROOT'] . '/OPTS2/dependencies/session.php');
 $title = 'ОПТС - Список компаний';
 $tr_count = 3;
 $page = (!empty($_GET['page'])) ? $_GET['page'] : 1;
-$prep_str = '';
 
 if (!empty($_POST['delete_id'])) {
-    $prep = $sql->prepare('DELETE FROM companies WHERE id=?');
-    $prep->bind_param('i', $_POST['delete_id']);
+    $prep = $sql->prepare('DELETE FROM companies WHERE id=:id');
+    $prep->bindParam(':id', $_POST['delete_id'], PDO::PARAM_INT);
     $prep->execute();
-    if (!empty($sql->error)) $delete_error = 'Произошла ошибка при удалении! Возможно, что эта запись уже где-то используется.';
+    if ($prep->errorCode() != '00000') $delete_error = 'Произошла ошибка при удалении! Возможно, что эта запись уже где-то используется.';
     else $delete_success = 'Запись успешно удалена!';
 }
 
@@ -21,47 +20,43 @@ if (!empty($_GET)) {
 } else $get = '?page=';
 
 if (!empty($_GET['name'])) {
-    $where[] = 'name LIKE ?';
-    $prep_str .= 's';
+    $where[] = 'name LIKE :name';
+    $prep_names[] = ':name';
+    $prep_types[] = PDO::PARAM_STR;
     $prep_vals[] = &$_GET['name'];
 }
 if (!empty($_GET['telephone'])) {
-    $where[] = 'telephone LIKE ?';
-    $prep_str .= 's';
+    $where[] = 'telephone LIKE :telephone';
+    $prep_names[] = ':telephone';
+    $prep_types[] = PDO::PARAM_STR;
     $prep_vals[] = &$_GET['telephone'];
 }
-$where_str = '';
-if (!empty($where)) {
-    $where_str = ' WHERE ' . join(' AND ', $where);
-}
+
 $limit_str = ' LIMIT ' . ($page - 1) * $tr_count . ',' . $tr_count;
-if (empty($where_str)) {
+if (empty($where)) {
     $query = $sql->query('SELECT id, telephone, name FROM companies' . $limit_str);
-    $counter = intval($sql->query('SELECT count(*) FROM companies')->fetch_array()[0]);
-    while ($row = $query->fetch_assoc()) {
+    $counter = intval($sql->query('SELECT count(*) FROM companies')->fetch()[0]);
+    while ($row = $query->fetch()) {
         $result[] = $row;
     }
 
 } else {
-    array_unshift($prep_vals, $prep_str);
+    $where_str = '';
+    $where_str = ' WHERE ' . join(' AND ', $where);
     $prep = $sql->prepare('SELECT id, telephone, name FROM companies' . $where_str . $limit_str);
-    call_user_func_array([$prep, 'bind_param'], $prep_vals);
-    $prep->execute();
-    $prep->bind_result($id, $telephone, $name);
-    $fetch_count = 0;
-    while ($prep->fetch()) {
-        $result[$fetch_count]['id'] = $id;
-        $result[$fetch_count]['telephone'] = $telephone;
-        $result[$fetch_count]['name'] = $name;
-        $fetch_count++;
+    foreach ($prep_vals as $key=>$value){
+        $prep->bindParam($prep_names[$key], $value, $prep_types[$key]);
     }
-    $prep->close();
-    $prep = $sql->prepare('SELECT count(*) FROM companies' . $where_str);
-    call_user_func_array([$prep, 'bind_param'], $prep_vals);
     $prep->execute();
-    $prep->bind_result($counter);
-    $prep->fetch();
-    $prep->close();
+    while ($row =  $prep->fetch()) {
+        $result[] = $row;
+    }
+    $prep = $sql->prepare('SELECT count(*) FROM companies' . $where_str);
+    foreach ($prep_vals as $key=>$value){
+        $prep->bindParam($prep_names[$key], $value, $prep_types[$key]);
+    }
+    $prep->execute();
+    $counter = $prep->fetch()[0];
 }
 
 include $_SERVER['DOCUMENT_ROOT'] . '/OPTS2/dependencies/header.php';

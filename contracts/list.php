@@ -1,51 +1,46 @@
 <?php
 include($_SERVER['DOCUMENT_ROOT'] . '/OPTS2/dependencies/session.php');
 $title = 'ОПТС - Список контрактов';
-$prep_str = '';
 
 if (!empty($_POST['delete_id'])) {
     $prep = $sql->prepare('DELETE FROM contracts WHERE id=?');
-    $prep->bind_param('i', $_POST['delete_id']);
+    $prep->bindParam(':id', $_POST['delete_id'], PDO::PARAM_INT);
     $prep->execute();
-    if (!empty($sql->error)) $delete_error = 'Произошла ошибка при удалении! Возможно, что эта запись уже где-то используется.';
+    if ($prep->errorCode() != '00000') $delete_error = 'Произошла ошибка при удалении! Возможно, что эта запись уже где-то используется.';
     else $delete_success = 'Запись успешно удалена!';
 }
 
 if (!empty($_GET['company'])) {
-    $where[] = 'companies.name LIKE ?';
-    $prep_str .= 's';
+    $where[] = 'companies.name LIKE :company';
+    $prep_names[] = ':company';
+    $prep_types[] = PDO::PARAM_STR;
     $prep_vals[] = &$_GET['company'];
 }
 if (!empty($_GET['start_date'])) {
-    $where[] = 'start_date LIKE ?';
-    $prep_str .= 's';
+    $where[] = 'start_date LIKE :start_date';
+    $prep_names[] = ':start_date';
+    $prep_types[] = PDO::PARAM_STR;
     $prep_vals[] = &$_GET['start_date'];
 }
-$where_str = '';
-if (!empty($where)) {
-    $where_str = ' WHERE ' . join(' AND ', $where);
-}
-if (empty($where_str)) {
+
+if (empty($where)) {
     $query = $sql->query('SELECT contracts.id AS id, contracts.start_date AS start_date, companies.name AS company FROM contracts
                       LEFT JOIN companies ON company_id=companies.id');
-    while ($row = $query->fetch_assoc()) {
+    while ($row = $query->fetch()) {
         $result[] = $row;
     }
 } else {
-    array_unshift($prep_vals, $prep_str);
+    $where_str = '';
+    $where_str = ' WHERE ' . join(' AND ', $where);
     $prep = $sql->prepare('SELECT contracts.id AS id, contracts.start_date AS start_date, companies.name AS company FROM contracts
-                      LEFT JOIN companies ON company_id=companies.id' . $where_str);
-    call_user_func_array([$prep, 'bind_param'], $prep_vals);
-    $prep->execute();
-    $prep->bind_result($id, $start_date, $company);
-    $fetch_count = 0;
-    while ($prep->fetch()) {
-        $result[$fetch_count]['id'] = $id;
-        $result[$fetch_count]['start_date'] = $start_date;
-        $result[$fetch_count]['company'] = $company;
-        $fetch_count++;
+    LEFT JOIN companies ON company_id=companies.id' . $where_str);
+    foreach ($prep_vals as $key=>$value){
+        $prep->bindParam($prep_names[$key], $value, $prep_types[$key]);
     }
-    $prep->close();
+    $prep->execute();
+    while ($row =  $prep->fetch()) {
+        $result[] = $row;
+    }
 }
 include $_SERVER['DOCUMENT_ROOT'] . '/OPTS2/dependencies/header.php';
 ?>

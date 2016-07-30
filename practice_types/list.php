@@ -5,36 +5,35 @@ $prep_str = '';
 
 if(!empty($_POST['delete_id'])){
     $prep = $sql->prepare('DELETE FROM practice_types WHERE id=?');
-    $prep->bind_param('i', $_POST['delete_id']);
+    $prep->bindParam(':id', $_POST['delete_id'], PDO::PARAM_INT);
     $prep->execute();
-    var_dump($sql->error);
-    if(!empty($sql->error)) $delete_error = 'Произошла ошибка при удалении! Возможно, что эта запись уже где-то используется.';
+    if($sql->errorCode() != '00000') $delete_error = 'Произошла ошибка при удалении! Возможно, что эта запись уже где-то используется.';
     else $delete_success = 'Запись успешно удалена!';
 }
 
 if (!empty($_GET['name'])) {
-    $where_str = ' WHERE name LIKE ?';
-    $prep_str .= 's';
+    $where[] = 'name LIKE :name';
+    $prep_names[] = ':name';
+    $prep_types[] = PDO::PARAM_STR;
     $prep_vals[] = &$_GET['name'];
 }
-if (empty($where_str)) {
+
+if (empty($where)) {
     $query = $sql->query('SELECT id, name FROM practice_types');
-    while ($row = $query->fetch_assoc()) {
+    while ($row = $query->fetch()) {
         $result[] = $row;
     }
 } else {
-    array_unshift($prep_vals, $prep_str);
+    $where_str = '';
+    $where_str = ' WHERE ' . join(' AND ', $where);
     $prep = $sql->prepare('SELECT id, name FROM practice_types' . $where_str);
-    call_user_func_array([$prep, 'bind_param'], $prep_vals);
-    $prep->execute();
-    $prep->bind_result($id, $name);
-    $fetch_count = 0;
-    while ($prep->fetch()) {
-        $result[$fetch_count]['id'] = $id;
-        $result[$fetch_count]['name'] = $name;
-        $fetch_count++;
+    foreach ($prep_vals as $key=>$value){
+        $prep->bindParam($prep_names[$key], $value, $prep_types[$key]);
     }
-    $prep->close();
+    $prep->execute();
+    while ($row =  $prep->fetch()) {
+        $result[] = $row;
+    }
 }
 include $_SERVER['DOCUMENT_ROOT'] . '/OPTS2/dependencies/header.php';
 ?>

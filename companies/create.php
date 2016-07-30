@@ -3,12 +3,20 @@ include ($_SERVER['DOCUMENT_ROOT'] . '/OPTS2/dependencies/session.php');
 $title = 'ОПТС - Создание компании';
 if (!empty($_POST) && empty($_POST['c_name'])) $error = 'Не правильно заполнена форма';
 elseif(!empty($_POST)) {
-    $query = "INSERT INTO companies (name, telephone, address, representative, description) VALUES (?, ?, ?, ?, ?)";
+    $query = "INSERT INTO companies (name, telephone, address, representative, description) VALUES (:name, :telephone, :address, :representative, :description)";
     $prep = $sql->prepare($query);
-    $prep->bind_param('sssss', $_POST['c_name'], $_POST['c_telephone'], $_POST['c_address'], $_POST['c_fio'], $_POST['c_description']);
+    $prep->bindParam(':name', $name, PDO::PARAM_STR);
+    $prep->bindParam(':telephone', $telephone, PDO::PARAM_STR);
+    $prep->bindParam(':address', $address, PDO::PARAM_STR);
+    $prep->bindParam(':representative', $representative, PDO::PARAM_STR);
+    $prep->bindParam(':description', $description, PDO::PARAM_STR);
+    $name = $_POST['c_name'];
+    $telephone = $_POST['c_telephone'];
+    $address = $_POST['c_address'];
+    $representative = $_POST['c_fio'];
+    $description = $_POST['c_description'];
     $prep->execute();
-    $prep->close();
-    header('Location: /OPTS2/companies/view.php?id=' . $sql->insert_id);
+    header('Location: /OPTS2/companies/view.php?id=' . $sql->lastInsertId());
 }
 include $_SERVER['DOCUMENT_ROOT'] . '/OPTS2/dependencies/header.php';
 ?>

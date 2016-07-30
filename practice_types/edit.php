@@ -4,20 +4,18 @@ $title = 'ОПТС - Редактирование типа практики';
 if (!empty($_GET['id'])) {
     if (!empty($_POST) && empty($_POST['e_name'])) $error = 'Не правильно заполнена форма';
     elseif (!empty($_POST)) {
-        $query = "UPDATE practice_types SET name=? WHERE id=?";
+        $query = "UPDATE practice_types SET name=:name WHERE id=:id";
         $prep = $sql->prepare($query);
-        $prep->bind_param('si', $_POST['e_name'], $_GET['id']);
+        $prep->bindParam(':name', $_POST['e_name'], PDO::PARAM_STR);
+        $prep->bindParam(':id', $_GET['id'], PDO::PARAM_INT);
         $prep->execute();
-        $prep->close();
         header('Location: /OPTS2/practice_types/list.php?name=' . $_POST['e_name']);
     }
 
-    $prep = $sql->prepare('SELECT name FROM practice_types WHERE id=?');
-    $prep->bind_param('i', $_GET['id']);
+    $prep = $sql->prepare('SELECT name FROM practice_types WHERE id=:id');
+    $prep->bindParam(':id', $_GET['id'], PDO::PARAM_INT);
     $prep->execute();
-    $prep->bind_result($result['name']);
-    $prep->fetch();
-    $prep->close();
+    $result = $prep->fetch();
 } else $error = 'Произошла ошибка отображения страницы';
 
 include $_SERVER['DOCUMENT_ROOT'] . '/OPTS2/dependencies/header.php';
