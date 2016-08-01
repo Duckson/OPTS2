@@ -59,3 +59,32 @@
     padding: inherit;
     border: none;
 }
+.well-light{
+    background-color: #fafafa;
+}
+.radio-table{
+    width: 15px;
+    height: 15px;
+}
+.div-radio{
+    overflow: hidden;
+    flex-grow: 0;
+    width: 32%;
+    margin: 5px;
+    border: solid 1px #a3a3a3;
+    border-radius: 2px;
+    word-break: break-all;
+}
+.div-radio:hover{
+    background-color: #c7fac4 !important;
+}
+.row-radio{
+    display: flex;
+    flex-direction: row;
+}
+#name{
+    width: 40%;
+}
+.radio{
+    display: inline;
+}

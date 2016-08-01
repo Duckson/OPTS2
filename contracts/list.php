@@ -51,7 +51,7 @@ include $_SERVER['DOCUMENT_ROOT'] . '/OPTS2/dependencies/header.php';
             <span class="h3">Фильтр</span>
             <form action="list.php" method="get">
                 <div class="form-group">
-                    <label for="company">Компании:</label>
+                    <label for="company">Компания:</label>
                     <input type="text" class="form-control" name="company" id="company" value="<?= $_GET['company'] ?>">
                 </div>
                 <div class="form-group">
@@ -73,7 +73,7 @@ include $_SERVER['DOCUMENT_ROOT'] . '/OPTS2/dependencies/header.php';
         <? if(!empty($delete_success)): ?>
             <span class="text-success"><?= $delete_success ?></span><br>
         <?endif;?>
-        <span class="h3">Контракты</span><a href="create.php" class="btn btn-success pull-right button-create">Добавить
+        <span class="h3">Контракты</span><a href="company_select.php?action=create" class="btn btn-success pull-right button-create">Добавить
             Контракт</a>
         <table class="table table-hover table-condensed table-bordered">
             <tr>
@@ -88,8 +88,8 @@ include $_SERVER['DOCUMENT_ROOT'] . '/OPTS2/dependencies/header.php';
                         <td><?= $row['start_date'] ?></td>
                         <td class="glyph_td">
                             <form class="form-glyph" method="post" action="list.php?<?= http_build_query($_GET) ?>">
-                                <a href="edit.php<?= $row['id'] ?>" class="glyphicon glyphicon-pencil action-glyph"></a>
-                                <a href="view.php<?= $row['id'] ?>"
+                                <a href="company_select.php?id=<?= $row['id'] ?>&action=edit" class="glyphicon glyphicon-pencil action-glyph"></a>
+                                <a href="view.php?id=<?= $row['id'] ?>"
                                    class="glyphicon glyphicon-resize-full action-glyph"></a>
                                 <button type="submit" name="delete_id" value="<?= $row['id'] ?>" class="btn-glyph glyphicon glyphicon-remove action-glyph">
                             </form>
